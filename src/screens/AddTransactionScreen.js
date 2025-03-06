@@ -1,14 +1,30 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import Icon from 'react-native-vector-icons/FontAwesome';
+
+
 
 const AddTransactionScreen = ({ route, navigation }) => {
-  const [date, setDate] = useState('');
+  const [date, setDate] = useState(new Date()); 
+  const [showPicker, setShowPicker] = useState(false);
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
   const [location, setLocation] = useState('');
   const [type, setType] = useState('Credit');
   const [category, setCategory] = useState('Shopping');
+
+  const onChange = (event, selectedDate) => {
+    const currentDate = selectedDate || date; 
+    setShowPicker(Platform.OS === 'ios'); 
+    setDate(currentDate); 
+  };
+
+  const showDatePicker = () => {
+    setShowPicker(true);
+  };
+
 
   const { handleAddTransaction } = route.params;
 
@@ -28,12 +44,24 @@ const AddTransactionScreen = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-      <TextInput
-        style={styles.input}
+      <View style={styles.DatePick}>
+       
+        <TextInput
+        style={styles.dateInput}
         placeholder="Date"
-        value={date}
+        value={date.toDateString()}
         onChangeText={setDate}
       />
+      {showPicker && (
+        <DateTimePicker
+          value={date}
+          mode="date" 
+          display={Platform.OS === 'ios' ? 'spinner' : 'default'} 
+          onChange={onChange} 
+        />)}
+      <Icon name="calendar" size={20} color="black" onPress={showDatePicker}  style={styles.icon}></Icon>
+      </View>
+      
       <TextInput
         style={styles.input}
         placeholder="Amount"
@@ -86,6 +114,9 @@ const styles = StyleSheet.create({
     padding: 16,
     marginTop: 20,
   },
+  icon: {
+    marginLeft: 10,
+  },
   input: {
     height: 50,
     borderRadius: 20,
@@ -99,6 +130,26 @@ const styles = StyleSheet.create({
     marginRight: 20,
     marginBottom: 20,
     paddingHorizontal: 8,
+  },
+  dateInput: {
+    flex: 1,
+    height: 50,
+    color: '#000',
+  },
+  DatePick:{
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    marginVertical: 10,
+    margin:20,
+    borderRadius: 20,
+    marginBottom: 10,
+    marginLeft: 20,
+    paddingHorizontal: 8,
+    marginBottom: 10,
   },
   button: {
     backgroundColor: '#4CAF50', 
