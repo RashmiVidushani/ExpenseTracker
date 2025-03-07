@@ -1,4 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { Picker } from "@react-native-picker/picker";
+import DatePicker from "../components/DatePicker";
+import * as Location from "expo-location";
 import {
   View,
   Text,
@@ -6,38 +9,75 @@ import {
   StyleSheet,
   TouchableOpacity,
   Platform,
+  Alert,
 } from "react-native";
-import { Picker } from "@react-native-picker/picker";
-import DatePicker from "../components/DatePicker";
+import { Icon } from "react-native-paper";
+
 
 const AddTransactionScreen = ({ route, navigation }) => {
   const [date, setDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState(false);
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
-  const [location, setLocation] = useState("");
   const [type, setType] = useState("Credit");
   const [category, setCategory] = useState("Shopping");
+  const [location, setLocation] = useState(null);
+  const [errorMsg, setErrorMsg] = useState(null);
+  const [address, setAddress] = useState("");
+  
+  const { handleAddTransaction } = route.params;
 
+  // Handle date picker change
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
     setShowPicker(Platform.OS === "ios");
     setDate(currentDate);
   };
 
-  const showDatePicker = () => {
-    setShowPicker(true);
-  };
+  // Fetch location and address
+  useEffect(() => {
+    (async () => {
+      // Request location permissions
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        setErrorMsg("Permission to access location was denied");
+        return;
+      }
 
-  const { handleAddTransaction } = route.params;
+      // Get the current location
+      let location = await Location.getCurrentPositionAsync({});
+      setLocation(location);
 
+      // Reverse geocode to get the address
+      let address = await Location.reverseGeocodeAsync({
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      });
+      if (address.length > 0) {
+        setAddress(
+          `${address[0].name}, ${address[0].city}, ${address[0].country}`
+        );
+      } else{
+        Alert.alert("Unable to get address");
+      }
+    })();
+  }, []);
+
+  // Handle form submission
   const handleSubmit = () => {
+    if (!amount || !description ) {
+      Alert.alert("Error", "Please fill all fields");
+      return;
+    }else{
+      Alert.alert("Transaction Added Successfully!");
+    }
+
     const newTransaction = {
       id: Math.random().toString(),
-      date,
-      amount,
+      date: date.toISOString().split("T")[0], 
+      amount: parseFloat(amount).toFixed(2), 
       description,
-      location,
+      location: address || "Unknown Location", 
       type,
       category,
     };
@@ -47,12 +87,15 @@ const AddTransactionScreen = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
+      {/* Date Picker */}
       <DatePicker
         showPicker={showPicker}
         value={date}
         onChange={onChange}
-        showDatePicker={showDatePicker}
+        showDatePicker={() => setShowPicker(true)}
       />
+
+      {/* Amount Input */}
       <TextInput
         style={styles.input}
         placeholder="Amount"
@@ -60,18 +103,26 @@ const AddTransactionScreen = ({ route, navigation }) => {
         onChangeText={setAmount}
         keyboardType="numeric"
       />
+
+      {/* Description Input */}
       <TextInput
         style={styles.input}
         placeholder="Description"
         value={description}
         onChangeText={setDescription}
       />
+
+      {/* Location Display */}
+      
       <TextInput
         style={styles.input}
         placeholder="Location"
-        value={location}
-        onChangeText={setLocation}
+        value={address || "Fetching location..."}
+        editable={false}
       />
+      
+
+      {/* Transaction Type Picker */}
       <Picker
         selectedValue={type}
         onValueChange={(itemValue) => setType(itemValue)}
@@ -82,6 +133,7 @@ const AddTransactionScreen = ({ route, navigation }) => {
         <Picker.Item label="Refund" value="Refund" />
       </Picker>
 
+      {/* Category Picker */}
       <Picker
         selectedValue={category}
         onValueChange={(itemValue) => setCategory(itemValue)}
@@ -91,17 +143,20 @@ const AddTransactionScreen = ({ route, navigation }) => {
         <Picker.Item label="Travel" value="Travel" />
         <Picker.Item label="Utility" value="Utility" />
       </Picker>
-      <TouchableOpacity
-        style={styles.button}
-        title="Add Transaction"
-        onPress={handleSubmit}
-      >
+
+      {/* Submit Button */}
+      <TouchableOpacity style={styles.button} onPress={handleSubmit}>
         <Text style={styles.buttonText}>Add Transaction</Text>
+        
       </TouchableOpacity>
+
+      {/* Error Message */}
+      {errorMsg && <Text style={styles.errorText}>{errorMsg}</Text>}
     </View>
   );
 };
 
+// Styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -120,9 +175,7 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     marginRight: 20,
     marginBottom: 20,
-    paddingHorizontal: 8,
   },
-
   button: {
     backgroundColor: "#4CAF50",
     height: 50,
@@ -149,6 +202,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     fontSize: 16,
     marginRight: 20,
+  },
+  errorText: {
+    color: "red",
+    textAlign: "center",
+    marginTop: 10,
   },
 });
 

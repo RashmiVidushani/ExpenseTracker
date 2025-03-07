@@ -2,12 +2,19 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Alert, StyleSheet, TouchableOpacity } from 'react-native';
 
 const SignInScreen = ({ navigation }) => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState(''); // State for username input
+  const [password, setPassword] = useState(''); // State for password input
 
+  // Function to handle sign-in
   const handleSignIn = () => {
+    // Input validation
+    if (!username.trim() || !password.trim()) {
+      Alert.alert('Error', 'Please enter both username and password');
+      return;
+    }
+
     if (username === 'admin' && password === 'admin') {
-      navigation.navigate('Dashboard');
+      navigation.navigate('Dashboard'); // Navigate to Dashboard if credentials are correct
     } else {
       Alert.alert('Error', 'Invalid username or password');
     }
@@ -17,12 +24,16 @@ const SignInScreen = ({ navigation }) => {
     <View style={styles.container}>
       <Text style={styles.title}>Welcome Back!</Text>
       <Text style={styles.subtitle}>Track your expenses, manage your budget, and take control of your finances.</Text>
+      
+      {/* Username Input Field */}
       <TextInput
         style={styles.input}
         placeholder="Username"
         value={username}
         onChangeText={setUsername}
       />
+
+      {/* Password Input Field */}
       <TextInput
         style={styles.input}
         placeholder="Password"
@@ -30,12 +41,11 @@ const SignInScreen = ({ navigation }) => {
         value={password}
         onChangeText={setPassword}
       />
-      <TouchableOpacity 
-        style={styles.button}
-        title="Sign In" onPress={handleSignIn}>
-          <Text style={styles.buttonText}>Sign In</Text>
+
+      {/* Sign-In Button */}
+      <TouchableOpacity style={styles.button} onPress={handleSignIn}>
+        <Text style={styles.buttonText}>Sign In</Text>
       </TouchableOpacity>
-    
     </View>
   );
 };
@@ -70,8 +80,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginLeft: 20,
     marginRight: 20,
-    marginBottom: 12,
-    paddingHorizontal: 8,
   },
   button: {
     backgroundColor: '#4CAF50', 
@@ -80,15 +88,14 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     marginRight: 20,
     marginBottom: 12,
-    paddingHorizontal: 16,
     justifyContent: 'center',
     alignItems: 'center',
   },
   buttonText: {
-    color: '#fff', // Text color
-    fontSize: 20, // Text size
-    fontWeight: 'bold', // Text weight
-    textAlign: 'center', // Text alignment
+    color: '#fff', 
+    fontSize: 20,
+    fontWeight: 'bold', 
+    textAlign: 'center', 
   },
 });
 
