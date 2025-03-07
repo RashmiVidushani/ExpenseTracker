@@ -1,30 +1,33 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Platform } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import Icon from 'react-native-vector-icons/FontAwesome';
-
-
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  TouchableOpacity,
+  Platform,
+} from "react-native";
+import { Picker } from "@react-native-picker/picker";
+import DatePicker from "../components/DatePicker";
 
 const AddTransactionScreen = ({ route, navigation }) => {
-  const [date, setDate] = useState(new Date()); 
+  const [date, setDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState(false);
-  const [amount, setAmount] = useState('');
-  const [description, setDescription] = useState('');
-  const [location, setLocation] = useState('');
-  const [type, setType] = useState('Credit');
-  const [category, setCategory] = useState('Shopping');
+  const [amount, setAmount] = useState("");
+  const [description, setDescription] = useState("");
+  const [location, setLocation] = useState("");
+  const [type, setType] = useState("Credit");
+  const [category, setCategory] = useState("Shopping");
 
   const onChange = (event, selectedDate) => {
-    const currentDate = selectedDate || date; 
-    setShowPicker(Platform.OS === 'ios'); 
-    setDate(currentDate); 
+    const currentDate = selectedDate || date;
+    setShowPicker(Platform.OS === "ios");
+    setDate(currentDate);
   };
 
   const showDatePicker = () => {
     setShowPicker(true);
   };
-
 
   const { handleAddTransaction } = route.params;
 
@@ -44,24 +47,12 @@ const AddTransactionScreen = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.DatePick}>
-       
-        <TextInput
-        style={styles.dateInput}
-        placeholder="Date"
-        value={date.toDateString()}
-        onChangeText={setDate}
+      <DatePicker
+        showPicker={showPicker}
+        value={date}
+        onChange={onChange}
+        showDatePicker={showDatePicker}
       />
-      {showPicker && (
-        <DateTimePicker
-          value={date}
-          mode="date" 
-          display={Platform.OS === 'ios' ? 'spinner' : 'default'} 
-          onChange={onChange} 
-        />)}
-      <Icon name="calendar" size={20} color="black" onPress={showDatePicker}  style={styles.icon}></Icon>
-      </View>
-      
       <TextInput
         style={styles.input}
         placeholder="Amount"
@@ -91,7 +82,7 @@ const AddTransactionScreen = ({ route, navigation }) => {
         <Picker.Item label="Refund" value="Refund" />
       </Picker>
 
-      <Picker 
+      <Picker
         selectedValue={category}
         onValueChange={(itemValue) => setCategory(itemValue)}
         style={styles.picker}
@@ -100,10 +91,13 @@ const AddTransactionScreen = ({ route, navigation }) => {
         <Picker.Item label="Travel" value="Travel" />
         <Picker.Item label="Utility" value="Utility" />
       </Picker>
-      <TouchableOpacity 
-        style={styles.button} title="Add Transaction" onPress={handleSubmit}>
-          <Text style={styles.buttonText}>Add Transaction</Text>
-        </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.button}
+        title="Add Transaction"
+        onPress={handleSubmit}
+      >
+        <Text style={styles.buttonText}>Add Transaction</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -114,14 +108,11 @@ const styles = StyleSheet.create({
     padding: 16,
     marginTop: 20,
   },
-  icon: {
-    marginLeft: 10,
-  },
   input: {
     height: 50,
     borderRadius: 20,
-    borderColor: '#ccc',
-    backgroundColor: '#f1f1f1',
+    borderColor: "#ccc",
+    backgroundColor: "#f1f1f1",
     marginBottom: 12,
     paddingHorizontal: 16,
     borderWidth: 1,
@@ -131,43 +122,23 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     paddingHorizontal: 8,
   },
-  dateInput: {
-    flex: 1,
-    height: 50,
-    color: '#000',
-  },
-  DatePick:{
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    marginVertical: 10,
-    margin:20,
-    borderRadius: 20,
-    marginBottom: 10,
-    marginLeft: 20,
-    paddingHorizontal: 8,
-    marginBottom: 10,
-  },
+
   button: {
-    backgroundColor: '#4CAF50', 
+    backgroundColor: "#4CAF50",
     height: 50,
-    borderRadius: 20, 
+    borderRadius: 20,
     marginLeft: 20,
     marginRight: 20,
     marginBottom: 10,
     paddingHorizontal: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-
+    justifyContent: "center",
+    alignItems: "center",
   },
   buttonText: {
-    color: '#fff', 
-    fontSize: 20, 
-    fontWeight: 'bold', 
-    textAlign: 'center', 
+    color: "#fff",
+    fontSize: 20,
+    fontWeight: "bold",
+    textAlign: "center",
   },
   picker: {
     height: 60,

@@ -11,7 +11,7 @@ const Stack = createStackNavigator();
 
 const AppNavigator = () => {
   return (
-    <Stack.Navigator initialRouteName="SignIn">
+    <Stack.Navigator initialRouteName="Dashboard">
       <Stack.Screen name="SignIn" component={SignInScreen} options={{ 
         title: 'Sign In',
         headerLeft: null,

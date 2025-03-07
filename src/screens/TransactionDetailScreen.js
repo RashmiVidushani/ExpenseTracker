@@ -1,16 +1,19 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { List } from 'react-native-paper';
+import React from "react";
+import { View, Text, StyleSheet } from "react-native";
+import { List } from "react-native-paper";
 
 const TransactionDetailScreen = ({ route }) => {
   const { transaction } = route.params;
+  console.log("transaction: ", transaction);
 
   return (
     <View style={styles.container}>
       <List.Section style={styles.section}>
-        <List.Item title="Date" description={transaction.date} 
-        titleStyle={{ fontWeight: 'bold', fontSize: 16, color: '#333' }}
-        descriptionStyle={{ fontSize: 14, color: '#666' }}
+        <List.Item
+          title="Date"
+          description={new Date(transaction.date).toISOString().split("T")[0]}
+          titleStyle={{ fontWeight: "bold", fontSize: 16, color: "#333" }}
+          descriptionStyle={{ fontSize: 14, color: "#666" }}
         />
         <List.Item title="Amount" description={transaction.amount} />
         <List.Item title="Description" description={transaction.description} />
@@ -30,10 +33,10 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     marginBottom: 16,
-    textAlign: 'center',
+    textAlign: "center",
   },
   section: {
-    borderColor: '#74b1be',
+    borderColor: "#74b1be",
     borderWidth: 2,
     margin: 8,
   },
